@@ -9,10 +9,16 @@ a =
 source = 0
 destination = 5
 
+class Node
+    attr_accessor :neighbors
+
+    def initialize
+        @neighbors = []
+    end
+end
+
 class Graph
     attr_accessor :nodes
-
-    @nodes
 
     def initialize(matrix)
         n = matrix.length
@@ -37,9 +43,7 @@ class Graph
         while !unvisited.empty?
             current = unvisited.min { |a, b| distance[a] <=> distance[b] }
 
-            if distance[current] == Float::INFINITY
-                return { found: false }
-            end
+            return { found: false } if distance[current] == Float::INFINITY
 
             unvisited.delete current
 
@@ -58,19 +62,9 @@ class Graph
                     path.unshift current
                     current = previous[current]
                 end
-                return { found: true, path: path.map! { |a| @nodes.find_index(a) } } 
+                return { found: true, path: path.map! { |a| @nodes.index a } } 
             end
         end
-    end
-end
-
-class Node
-    attr_accessor :neighbors
-
-    @neighbors
-
-    def initialize
-        @neighbors = []
     end
 end
 
