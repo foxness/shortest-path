@@ -12,24 +12,25 @@ destination = 5 # индекс конечной вершины
 # !! все, что выше - входные данные программы !!
 
 class Graph # класс графа
-    attr_accessor :nodes # граф имеет только вершины, которые представлены массивами их соседей
+    # граф имеет только вершины (вершина тут - всего лишь массив смежных ей вершин)
+    attr_accessor :nodes # делаем вершины графа открытыми
 
     # метод, создающий объект графа из данной матрицы смежности
-    def initialize(matrix)
-        n = matrix.length # n - количество вершин
-        @nodes = []
+    def initialize(matrix) # matrix - данная матрица смежности
+        n = matrix.length # количество вершин равно числу строк данной матрицы смежности
+        @nodes = [] # массив вершин графа
         n.times { @nodes << [] } # для начала заполняем граф n несвязанными вершинами
-        n.times do |y|
+        n.times do |y| # проходимся по каждой паре вершин
             n.times do |x|
-                if matrix[y][x] > 0
-                    @nodes[y] << @nodes[x] # связываем вершины, если элемент на пересечении матрицы больше нуля
+                if matrix[y][x] > 0 # если элемент матрицы на их пересечении больше нуля
+                    @nodes[y] << @nodes[x] # то делаем их смежными
                 end
             end
         end
     end
 
     # метод, находящий кратчайший путь от А до Б с помощью алгоритма Дейкстры
-    def find_shortest_path(source, destination)
+    def find_shortest_path(source, destination) # source - начальная вершина, destination - конечная
         unvisited = @nodes.dup # в начале все вершины - непосещенные
         distance = Hash.new Float::INFINITY # а также расстояния равны бесконечности
         previous = Hash.new # будет показывать предыдущую вершину в оптимальном пути к этой вершине
@@ -43,15 +44,15 @@ class Graph # класс графа
 
             unvisited.delete current # удаляем из непосещенных вершин текущую
 
-            current.each do |neighbor| # для каждого соседа текущей вершины
-                alt = distance[current] + 1 # предварительное расстояние до соседа = расстояние до текущей + 1
+            current.each do |neighbor| # для каждой смежной вершины текущей вершины
+                alt = distance[current] + 1 # предварительное расстояние = расстояние до текущей вершины + 1
                 if alt < distance[neighbor] # если новое расстояние меньше старого
                     distance[neighbor] = alt # используем новое расстояние
-                    previous[neighbor] = current # предыдущая вершина соседа в оптимальном пути - текущая вершина
+                    previous[neighbor] = current # предыдущая вершина для этой смежной вершины в оптимальном пути - текущая вершина
                 end
             end
 
-            unless unvisited.include? destination # если конечная вершина посещена
+            unless unvisited.include? destination # если конечная вершина посещена (читай - если кратчайший путь найден)
                 path = [] # ниже строим массив вершин кратчайшего пути
                 current = destination # текущая вершина = конечная вершина
                 while current # пока существует текущая вершина
